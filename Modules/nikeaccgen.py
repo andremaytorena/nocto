@@ -223,23 +223,26 @@ def nikeGenerateAccount(region,email,password,firstName,lastName,birthDate,phone
 
     print(f"{reset_color}[{time.strftime('%H:%M:%S', time.localtime())}][{email}][{main_count}] {'Adding Email'}{reset_color}")
 
-    try:
-        driver.find_element(By.ID, 'username').click()
-    except:
+    for i in range(5):
         try:
-            driver.find_element(By.XPATH, '//*[@id="username"]').click()
+            driver.find_element(By.ID, 'username').click()
+            break
         except:
             try:
-                driver.find_element(By.XPATH, '//*[@id="gen-nav-commerce-header-v2"]/div[1]/div/div[2]/div/div[3]/div[1]/div[1]/button').click()
+                driver.find_element(By.XPATH, '//*[@id="username"]').click()
+                break
             except:
-                #'Unable to Get Email Field'
-                return "RETRY"
-
+                try:
+                    driver.find_element(By.XPATH, '//*[@id="gen-nav-commerce-header-v2"]/div[1]/div/div[2]/div/div[3]/div[1]/div[1]/button').click()
+                    break
+                except:
+                    None
+        if i == 4:
+            return "Failed Adding Email"
     
     for letter in email:
         act_chain.send_keys(letter).perform()
         time.sleep(random.randint(20000, 110000)/100000)
-
 
     try:
         driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div/div/form/div/div[3]').click()
@@ -254,24 +257,38 @@ def nikeGenerateAccount(region,email,password,firstName,lastName,birthDate,phone
         act_chain.send_keys(Keys.ENTER).perform()
     
     time.sleep(random.randint(110000, 190000)/100000)
+    time.sleep(random.randint(110000, 190000)/100000)
 
     print(f"{reset_color}[{time.strftime('%H:%M:%S', time.localtime())}][{email}][{main_count}] {'Adding Account Details'}{reset_color}")
 
-    try:
-        driver.find_element(By.ID, 'firstName').click()
-    except:
-        print(f"{reset_color}[{time.strftime('%H:%M:%S', time.localtime())}][{email}][{main_count}] {'Waiting 30 Seconds...'}{reset_color}")
-        time.sleep(30)
-
+    for i in range(5):
         try:
-            driver.find_element(By.ID, 'username').click()
+            driver.find_element(By.ID, 'firstName').click()
+            break
         except:
-            None
+            try:
+                print(f"{reset_color}[{time.strftime('%H:%M:%S', time.localtime())}][{email}][{main_count}] {'Waiting 30 Seconds...'}{reset_color}")
+                time.sleep(30)
 
-        try:
-            driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div/div/form/div/div[4]/button').click()
-        except:
-            act_chain.send_keys(Keys.ENTER).perform()
+                try:
+                    driver.find_element(By.ID, 'username').click()
+                except:
+                    time.sleep(6)
+                    try:
+                        driver.find_element(By.ID, 'username').click()
+                    except:
+                        return "Failed Confirming Email"
+
+                try:
+                    driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div/div/form/div/div[4]/button').click()
+                    break
+                except:
+                    act_chain.send_keys(Keys.ENTER).perform()
+                    break
+            except:
+                None
+        if i == 4:
+            return "Failed Adding Email"
 
     time.sleep(random.randint(110000, 190000)/100000)
     time.sleep(1)
@@ -283,7 +300,7 @@ def nikeGenerateAccount(region,email,password,firstName,lastName,birthDate,phone
         try:
             driver.find_element(By.XPATH, '//*[@id="l7r-first-name-input"]').click()
         except:
-            return "RETRY"
+            return "Failed Finding First Name"
         
     for letter in firstName:
         act_chain.send_keys(letter).perform()
@@ -296,7 +313,7 @@ def nikeGenerateAccount(region,email,password,firstName,lastName,birthDate,phone
         try:
             driver.find_element(By.XPATH, '//*[@id="l7r-last-name-input"]').click()
         except:
-            return "RETRY"
+            return "Failed Finding Last Name"
         
     for letter in lastName:
         act_chain.send_keys(letter).perform()
@@ -309,7 +326,7 @@ def nikeGenerateAccount(region,email,password,firstName,lastName,birthDate,phone
         try:
             driver.find_element(By.XPATH, '//*[@id="l7r-password-input"]').click()
         except:
-            return "RETRY"
+            return "Failed Finding Password"
         
     for letter in password:
         act_chain.send_keys(letter).perform()
@@ -322,7 +339,7 @@ def nikeGenerateAccount(region,email,password,firstName,lastName,birthDate,phone
         try:
             driver.find_element(By.XPATH, '//*[@id="l7r-shopping-preference"]').click()
         except:
-            return "RETRY"
+            return "Failed Finding Shopping Preference"
         
     act_chain.send_keys(Keys.ARROW_DOWN).perform()
     act_chain.send_keys(Keys.ENTER).perform()
@@ -336,7 +353,7 @@ def nikeGenerateAccount(region,email,password,firstName,lastName,birthDate,phone
         try:
             driver.find_element(By.XPATH, '//*[@id="l7r-date-of-birth-input"]').click()
         except:
-            return "RETRY"
+            return "Failed Finding BDate"
         
     for letter in birthDate:
         act_chain.send_keys(letter).perform()
@@ -351,7 +368,7 @@ def nikeGenerateAccount(region,email,password,firstName,lastName,birthDate,phone
         try:
             driver.find_element(By.XPATH, '//*[@id="privacyTerms"]').click()
         except:
-            return "RETRY"
+            return "Failed Finding Privacy Terms"
         
     time.sleep(random.randint(110000, 190000)/100000)
 
@@ -364,7 +381,7 @@ def nikeGenerateAccount(region,email,password,firstName,lastName,birthDate,phone
         try:
             driver.find_element(By.XPATH, '//*[@id="l7r-code-input"]').click()
         except:
-            return "RETRY"
+            return "Failed Finding Email Code"
         
     for letter in emailcode:
         act_chain.send_keys(letter).perform()
@@ -382,7 +399,10 @@ def nikeGenerateAccount(region,email,password,firstName,lastName,birthDate,phone
 
     time.sleep(5)
 
-    print(f"{green_color}[{time.strftime('%H:%M:%S', time.localtime())}][{email}][{main_count}] {'Successfully Generated Nike Account'}{reset_color}")
+    if 'https://www.nike.com/' in driver.current_url:
+        print(f"{green_color}[{time.strftime('%H:%M:%S', time.localtime())}][{email}][{main_count}] {'Successfully Generated Nike Account'}{reset_color}")
+    else:
+        return "Failed Generating Account"
 
     if phoneVerificationResponse == False:
         return "Generated Account"
@@ -391,32 +411,42 @@ def nikeGenerateAccount(region,email,password,firstName,lastName,birthDate,phone
 
     print(f"{reset_color}[{time.strftime('%H:%M:%S', time.localtime())}][{email}][{main_count}] {'Adding Phone Number'}{reset_color}")
 
-    try:
-        driver.find_element(By.XPATH, '//*[@id="gen-nav-commerce-header-v2"]/div[1]/div/div[2]/div/div[2]/div[2]/button').click()
-    except:
+    for i in range(5):
         try:
-            time.sleep(random.randint(110000, 190000)/100000)
             driver.find_element(By.XPATH, '//*[@id="gen-nav-commerce-header-v2"]/div[1]/div/div[2]/div/div[2]/div[2]/button').click()
+            break
         except:
-            None
+            time.sleep(random.randint(110000, 190000)/100000)
+        if i == 4:
+            return "Generated Account: Failed Finding Phone Button 1"
 
-    try:
-        driver.find_element(By.XPATH, '//*[@id="settings"]/div[3]/div[1]/div[1]/div/div[2]/div/span').click()
-    except:
+    for i in range(5):
         try:
-            driver.find_element(By.XPATH, '//*[@id="settings"]/div[3]/div[1]/div[1]').click()
+            driver.find_element(By.XPATH, '//*[@id="settings"]/div[3]/div[1]/div[1]/div/div[2]/div/span').click()
+            break
         except:
-            return "RETRY"  
+            try:
+                driver.find_element(By.XPATH, '//*[@id="settings"]/div[3]/div[1]/div[1]').click()
+                break
+            except:
+                time.sleep(random.randint(110000, 190000)/100000)
+        if i == 4:
+            return "Generated Account: Failed Finding Phone Button 2"
         
     time.sleep(random.randint(110000, 190000)/100000)
 
-    try:
-        driver.find_element(By.XPATH, '//*[@id="modal-root"]/div/div/div/div/section/div/div[2]/div/div[3]/div/form/div[2]/div[4]/div/div/div/div[2]/button').click()
-    except:
+    for i in range(5):
         try:
             driver.find_element(By.XPATH, '//*[@id="modal-root"]/div/div/div/div/section/div/div[2]/div/div[3]/div/form/div[2]/div[4]/div/div/div/div[2]/button').click()
+            break
         except:
-            return "RETRY"    
+            try:
+                driver.find_element(By.XPATH, '//*[@id="modal-root"]/div/div/div/div/section/div/div[2]/div/div[3]/div/form/div[2]/div[4]/div/div/div/div[2]/button').click()
+                break
+            except:
+                time.sleep(random.randint(110000, 190000)/100000)
+        if i == 4:
+            return "Generated Account: Failed Finding Phone Button 3"
     
     time.sleep(random.randint(110000, 190000)/100000)
 
@@ -432,17 +462,23 @@ def nikeGenerateAccount(region,email,password,firstName,lastName,birthDate,phone
             sms_mode = 'SMSACTIVATE'
         except: 
             print("failed: " + number['message'])
-            return "Failed"
+            return "Failed Getting Phone"
+        phone = phone[2:]
     else:
         sms_mode = "Manual"
 
-    try:
-        driver.find_element(By.ID, 'phoneNumber').click()
-    except:
+    for i in range(5):
         try:
-            driver.find_element(By.XPATH, '//*[@id="phoneNumber"]').click()
+            driver.find_element(By.ID, 'phoneNumber').click()
+            break
         except:
-            return "RETRY"
+            try:
+                driver.find_element(By.XPATH, '//*[@id="phoneNumber"]').click()
+                break
+            except:
+                time.sleep(random.randint(110000, 190000)/100000)
+        if i == 4:
+            return "Generated Account: Failed Finding Phone Box"
         
     for letter in phone:
         act_chain.send_keys(letter).perform()
@@ -457,7 +493,7 @@ def nikeGenerateAccount(region,email,password,firstName,lastName,birthDate,phone
         try:
             driver.find_element(By.XPATH, '//*[@id="agreeToTerms"]').click()
         except:
-            return "RETRY"
+            return "Generated Account: RETRY PHONE"
 
     time.sleep(random.randint(110000, 190000)/100000)
 
@@ -481,7 +517,7 @@ def nikeGenerateAccount(region,email,password,firstName,lastName,birthDate,phone
         try:
             driver.find_element(By.XPATH, '//*[@id="code"]').click()
         except:
-            return "RETRY"
+            return "Generated Account: RETRY PHONE"
         
     for letter in smscode:
         act_chain.send_keys(letter).perform()
@@ -523,7 +559,7 @@ def verifyDetails(region,email,password,firstName,lastName,birthDate,phone,proxy
         year = random.randint(1900, 2022)
         birthDate = f"{month:02}/{day:02}/{year}"
     if phone == '':
-        phone == 'SMSACTIVATE'
+        phone = 'SMSACTIVATE'
     if proxy == '':
         with open(PATH_PROXIES) as file:
             myproxies = file.readlines()
@@ -537,7 +573,7 @@ def verifyDetails(region,email,password,firstName,lastName,birthDate,phone,proxy
 
 def nikeDetails():
 
-    global phoneVerificationResponse
+    global phoneVerificationResponse, retryLimit, smsActivateApiKey, webhook
 
     main_count = 0
     proxy_count = 0
@@ -559,6 +595,7 @@ def nikeDetails():
 
     smsActivateApiKey = jsonerrorlogs.jsonsmsactivatekey()
     webhook = jsonerrorlogs.jsonwebhook()
+    retryLimit = jsonerrorlogs.jsonretrylimit()
 
     print(f"{reset_color}[{time.strftime('%H:%M:%S', time.localtime())}][][{main_count}] {'Loaded Details.'}{reset_color}")
 
@@ -575,11 +612,14 @@ def nikeDetails():
 
         region,email,password,firstName,lastName,birthDate,phone,proxy = verifyDetails(region,email,password,firstName,lastName,birthDate,phone,proxy,proxy_count)
 
-        status = nikeGenerateAccount(region,email,password,firstName,lastName,birthDate,phone,proxy,smsActivateApiKey,main_count)
+        for i in range(int(retryLimit)):
+            status = nikeGenerateAccount(region,email,password,firstName,lastName,birthDate,phone,proxy,smsActivateApiKey,main_count)
+            if "Generated Account" in status:
+                creationWebhook(email,password,firstName,lastName,phone,proxy,webhook)
+                break
+            else:
+               None
 
-        if status == "Generated Account":
-            creationWebhook(email,password,firstName,lastName,phone,proxy,webhook)
-            
         writeDetails(region,email,password,firstName,lastName,birthDate,phone,proxy,status)
 
         proxy_count+=1

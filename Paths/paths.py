@@ -1,9 +1,15 @@
-import os, csv, json, requests, zipfile, sys
+import os, csv, json, requests, zipfile, sys, platform
 from os import path
+from Loader.osSelector import clearScreen
 
 def get_desktop_path():
 
     cwd = os.getcwd()
+    return cwd
+
+def get_desktop_path_mac():
+
+    cwd = os.path.expanduser("~/Desktop/Nocto")
     return cwd
 
 
@@ -29,8 +35,6 @@ def settings_file():
         },
         "revolutbusiness": {
             "solve_delay": "2",
-            "email": "",
-            "password": ""
         },
 
         "RetryLimit": "3",
@@ -44,7 +48,7 @@ def settings_file():
     return data
 
 
-def set_paths_noctotools():
+def set_paths_noctotools(operatingSystem):
 
     #settings json
     global PATH_SETTINGS
@@ -491,33 +495,53 @@ def set_paths_noctotools():
     PATH_PLATFORMCOMPARATOR_CSV = path.join(MAIN_PATH, 'ignore.csv')
 
     global PATH_CHROME_DRIVER, PATH_CHROME_ZIP
-    PATH_CHROME_DRIVER = path.join(MAIN_PATH, "chromedriver.exe")
-    PATH_CHROME_ZIP = path.join(MAIN_PATH, 'chromedriver.zip')
+    
+    if operatingSystem == "Windows":
+        PATH_CHROME_DRIVER = path.join(MAIN_PATH, "chromedriver.exe")
+        PATH_CHROME_ZIP = path.join(MAIN_PATH, 'chromedriver.zip')
 
-    version = requests.get("https://noctotools.herokuapp.com/chrome_version").text
-    if os.path.exists(PATH_CHROME_DRIVER):
-        None
-    else:
-        try:
-            url = 'https://chromedriver.storage.googleapis.com/{0}/{1}'.format(version, 'chromedriver_win32.zip')
-            r = requests.get(url, allow_redirects=True)
-            open(PATH_CHROME_ZIP, 'wb').write(r.content)
-            with zipfile.ZipFile(PATH_CHROME_ZIP, "r") as zip_ref:
-                zip_ref.extractall(MAIN_PATH)
-        except:
+        version = requests.get("https://noctotools.herokuapp.com/chrome_version").text
+        if os.path.exists(PATH_CHROME_DRIVER):
             None
+        else:
+            try:
+                url = 'https://chromedriver.storage.googleapis.com/{0}/{1}'.format(version, 'chromedriver_win32.zip')
+                r = requests.get(url, allow_redirects=True)
+                open(PATH_CHROME_ZIP, 'wb').write(r.content)
+                with zipfile.ZipFile(PATH_CHROME_ZIP, "r") as zip_ref:
+                    zip_ref.extractall(MAIN_PATH)
+            except:
+                None
 
-        try:
-            os.remove(PATH_CHROME_ZIP)
-        except:
+            try:
+                os.remove(PATH_CHROME_ZIP)
+            except:
+                None
+            try:
+                os.remove(path.join(MAIN_PATH, "LICENSE.chromedriver"))
+            except:
+                None
+    elif operatingSystem == "Darwin":
+        PATH_CHROME_DRIVER = path.join(MAIN_PATH, "chromedriver")
+        PATH_CHROME_ZIP = path.join(MAIN_PATH, 'chromedriver.zip')
+
+        version = requests.get("https://noctotools.herokuapp.com/chrome_version").text
+        if os.path.exists(PATH_CHROME_DRIVER):
             None
-        try:
-            os.remove(path.join(MAIN_PATH, "LICENSE.chromedriver"))
-        except:
-            None
+        else:
+            try:
+                url = 'https://chromedriver.storage.googleapis.com/{0}/{1}'.format('109.0.5414.74', 'chromedriver_mac64.zip')
+                r = requests.get(url, allow_redirects=True)
+                open(PATH_CHROME_ZIP, 'wb').write(r.content)
+                with zipfile.ZipFile(PATH_CHROME_ZIP, "r") as zip_ref:
+                    zip_ref.extractall(MAIN_PATH)
+                os.chmod(PATH_CHROME_DRIVER, 0o755)
+                
+            except:
+                None
     
 
-def set_paths_noctoraffles():
+def set_paths_noctoraffles(operatingSystem):
 
     PATH_NOCTORAFLES_FOLDER = path.join(MAIN_PATH, "RaffleSites")
     if os.path.exists(PATH_NOCTORAFLES_FOLDER):
@@ -807,17 +831,36 @@ def writeToJSONFile():
 def check_for_file():
 
     global MAIN_PATH
-    MAIN_PATH = path.join(get_desktop_path(), 'Nocto')
 
-    if os.path.exists(MAIN_PATH):
-        False
-    else:
-        os.mkdir(MAIN_PATH)
+    operatingSystem = platform.system()
 
-    set_paths_noctotools()
-    set_paths_noctoraffles()
+    if operatingSystem == "Windows":
 
-    os.system('cls')   
+        MAIN_PATH = path.join(get_desktop_path(), 'Nocto')
+
+        if os.path.exists(MAIN_PATH):
+            False
+        else:
+            os.mkdir(MAIN_PATH)
+
+        set_paths_noctotools(operatingSystem)
+        set_paths_noctoraffles(operatingSystem)
+
+        clearScreen()  
+
+    elif operatingSystem == "Darwin":
+
+        MAIN_PATH = path.join(get_desktop_path_mac())
+
+        if os.path.exists(MAIN_PATH):
+            False
+        else:
+            os.mkdir(MAIN_PATH)
+
+        set_paths_noctotools(operatingSystem)
+        set_paths_noctoraffles(operatingSystem)
+
+    clearScreen()
     
 check_for_file()
 
