@@ -1,0 +1,24 @@
+{
+    "LicenseKey": "YAO8-94MS-1V82-S7JR",
+    "Stripe": {
+        "API_Key": "",
+        "CardHolder_ID": ""
+    },
+    "GmailGenerator": {
+        "Phone_Verification_Mode": "smsactivateru",
+        "Country_Code": "16",
+        "browser_mode": "headfull",
+        "SMSactivateAPI_KEY": "helo"
+    },
+    "revolutnormal": {
+        "solve_delay": "2"
+    },
+    "revolutbusiness": {
+        "solve_delay": "2"
+    },
+    "RetryLimit": "3",
+    "2captcha_key": "7196cecfb0bff19d76e44d174b7edceb",
+    "EntryDelay": "30",
+    "Threads": "1",
+    "Webhook": "https://discord.com/api/webhooks/1080636474132811837/AodrwJzqAx2vKDa1eaFjtXlTcs_1V4XFLvf3-A8N3hCJTeMuaDL0h3cee4iQKa9HoaTQ"
+}
