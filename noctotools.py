@@ -142,7 +142,7 @@ def NoctoTools(username, license_key):
         if option == 'A1' or option == 'a1':# special handling for NoctoRaffles option
             options[option](username, license_key)  # call the function with arguments
         else:
-            os.system("cls")
+            clearScreen()
             options[option]()  # call the function without arguments
             NoctoTools(username, license_key)
     else:

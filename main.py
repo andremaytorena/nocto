@@ -54,7 +54,7 @@ currentVersion = "0.2.1"
 def main(username, license_key):
     
     clearScreen()
-    
+
     threading.Thread(target=discord_rpc).start()
 
     logged(username, license_key)
@@ -78,6 +78,8 @@ def main(username, license_key):
         NoctoTools(username, license_key)
     elif option == "2":
         NoctoRaffles(username, license_key)
+    else:
+        main(username, license_key)
 
 #pyarmor pack -e "--onefile --icon logo.ico --add-data 'ca.crt;seleniumwire' --add-data 'ca.key;seleniumwire'" main.py
 
