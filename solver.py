@@ -70,7 +70,6 @@ def clean_tokens(account_num, phone_number):
     sys.exit()
 
 
-
 def solve_challenges(authtoken, DEVICE_ID, session, phone_number, account_num):
 
     count = 1

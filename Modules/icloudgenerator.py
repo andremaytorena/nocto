@@ -187,11 +187,60 @@ def export(cooks):
         
         count = count + 1
 
+def deleter(cooks):
 
+    green_color = '\033[92m' #light green
+    reset_color = '\033[0m' #reset color
+    red_color = '\033[91m' #red
+
+    print(f"{reset_color}[{time.strftime('%H:%M:%S', time.localtime())}] [{1}] {'iCloud Email Generator: Starting Session'} {reset_color}")
+
+    session = requests.session()
+
+    for cookie in cooks:
+        session.cookies.set(
+            cookie["name"], cookie["value"], domain='icloud.com'
+        )
+
+
+    print(f"{reset_color}[{time.strftime('%H:%M:%S', time.localtime())}] [{1}] {'iCloud Email Generator: Fetching Current Emails'} {reset_color}")
+    list_result = session.get(
+        'https://p68-maildomainws.icloud.com/v1/hme/list',
+
+        headers={
+            "Origin": "https://www.icloud.com",
+        }
+    ).json()
+
+    email_list = list_result['result']['hmeEmails']
+    count = 0
+    for i in range(len(email_list)):
+        print(list_result['result']['hmeEmails'][count])
+        email_id = list_result['result']['hmeEmails'][count]['anonymousId']
+        status = str(list_result['result']['hmeEmails'][count]['isActive'])
         
+        if status == "False":
+            None
+        else:
+
+            reserve_email_result = session.post(
+                'https://p33-maildomainws.icloud.com/v1/hme/deactivate',
+
+                headers={
+                    "Origin": "https://www.icloud.com"
+                },
+
+                json={
+                    "anonymousId": email_id,
+                }
+            ).json()
+
+            print(reserve_email_result)
+
+        count+=1      
 
 
-def task(mode):
+def task(option):
 
     global webhook
 
@@ -213,13 +262,14 @@ def task(mode):
 
     driver.close()
 
-    if mode == True:
+    if option == "1":
         AMOUNT = int(input("How many emails: "))
         generate(cooks, AMOUNT)
-    elif mode == False:
+    elif option == "2":
         createCSV()
         export(cooks)
-
+    elif option == "3":
+        deleter(cooks)
 
 
 def task_option():
@@ -228,18 +278,13 @@ def task_option():
     print('')
     print("1. Generate iClouds")
     print("2. Export Current iClouds")
+    print("3. Delete iClouds")
     print("")
     print("3. Back")
     print("")
-    option = int(input('Option: '))
-    if option == 1:
-        mode = True
-    elif option == 2:
-        mode = False
-    elif option == 3:
-        return "BACK"
+    option = input('Option: ')
 
-    task(mode)
+    task(option)
 
     OKBLUE = '\033[94m'
     reset_color = '\033[0m' #reset color
