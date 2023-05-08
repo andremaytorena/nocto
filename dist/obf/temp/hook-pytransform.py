@@ -1,0 +1,1 @@
+binaries=[(r"C:\Users\andre\Desktop\NoctoTools\dist\obf\_pytransform*", ".")]

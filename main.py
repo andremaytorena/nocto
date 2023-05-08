@@ -49,7 +49,7 @@ def logged(username, license_key):
     }
     requests.post(webhook, json=web)
 
-currentVersion = "0.2.2"
+currentVersion = "0.2.3"
 
 def main(username, license_key):
     

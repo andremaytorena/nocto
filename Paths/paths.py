@@ -804,6 +804,22 @@ def set_paths_noctoraffles(operatingSystem):
         CSV_PATH = PATH_BSTN_ACCGENPROFILES
         create_csv(headers, CSV_PATH)
 
+    global PATH_FA_FOLDER, PATH_FA_PROFILES
+    PATH_FA_FOLDER = path.join(PATH_NOCTORAFLES_FOLDER, "Footasylum")
+    PATH_FA_PROFILES = path.join(PATH_NOCTORAFLES_FOLDER, "Footasylum", "profiles.csv")
+    if os.path.exists(PATH_FA_FOLDER):
+        False  
+    else:
+        os.mkdir(PATH_FA_FOLDER)
+
+    if os.path.exists(PATH_FA_PROFILES):
+        False
+    else: 
+        print("File doesn't exist, creating one..")
+        headers = ['Size', 'Email', 'Password', 'First Name', 'Last Name', 'Address Line 1', 'Address Line 2', 'City', 'Postcode', 'Phone', 'CC Number', 'CC Month', 'CC Year', 'CVV']
+        CSV_PATH = PATH_FA_PROFILES
+        create_csv(headers, CSV_PATH)
+
 
 def create_csv(headers, CSV_PATH):
     with open(CSV_PATH, 'w', newline='') as file:

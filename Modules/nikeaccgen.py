@@ -391,7 +391,7 @@ def nikeGenerateAccount(region,email,password,firstName,lastName,birthDate,phone
 
     print(f"{reset_color}[{time.strftime('%H:%M:%S', time.localtime())}][{email}][{main_count}] {'Submitting Account Details'}{reset_color}")
 
-    #CLICK SUBMIT
+    #CLICK SUBMIT 
     try:
         driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div/div[2]/form/div/div[10]/button').click()
     except:
