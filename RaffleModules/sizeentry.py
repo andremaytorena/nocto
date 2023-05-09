@@ -5,7 +5,7 @@ from py_adyen_encrypt import encryptor
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 import pandas as pd 
-from Paths.paths import PATH_SIZE_LOGS, PATH_PROXIES, PATH_SIZE_FOLDER, MAIN_PATH
+from Paths.paths import PATH_SIZE_LOGS, PATH_PROXIES, PATH_SIZE_FOLDER, MAIN_PATH, PATH_CHROME_DRIVER
 import RaffleModules.webhook_management as webhooks
 from os import path
 from mohawk import Sender
@@ -66,124 +66,67 @@ def encode(data:dict):
     return str(base64.b64encode(json.dumps(data).replace(' ','').encode()).decode())
 
 
+
 def identify3DS(redirect_url, md, paReq, pspReference, order_id, email, proxies, main_count, session, size):
 
     print(f"{reset_color}[{time.strftime('%H:%M:%S', time.localtime())}][{email}][{main_count}] {'Getting 3DS Browser..'} {reset_color}")
 
-    headers = {
-        'Host': 'checkoutshopper-live.adyen.com',
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Origin': 'https://size-mosaic-webapp.jdmesh.co',
-        'Accept-Encoding': 'gzip, deflate, br',
-        'Connection': 'keep-alive',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'User-Agent': 'Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/92.0.4515.131 Mobile Safari/537.36',
-        'Referer': 'https://size-mosaic-webapp.jdmesh.co/?channel=android-app-tablet-mosaic&appversion=2',
-        'Accept-Language': 'en-gb'
-    }
-
-    payload = {
-        'PaReq': paReq,
-        'MD': md,
-        'TermUrl': f'https://mosaic-platform.jdmesh.co/stores/size/preAuthorise/{order_id}/payment/3dsecure'
-    }
-    r = session.post(redirect_url, data=payload, headers=headers, proxies=proxies)
-    token = re.search("token: '[^']*'", r.text).group().replace("token: '", '').replace("'", '')
-    data = decode(token)
-    threeDSData = {
-        'acsURL': data['acsURL'],
-        'acsTransID': data['acsTransID'],
-        'threeDSServerTransID': data['threeDSServerTransID'],
-        'messageVersion': data["messageVersion"]
-    }
-
-
-    # PATH_CHROME_DRIVER = os.path.expanduser("~/Desktop/chromedriver")
     ser = Service()
     options = Options()
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
 
-    driver = webdriver.Chrome(service=ser, options=options, service_log_path='/dev/null')
+    driver = webdriver.Chrome(service=ser, options=options, service_log_path='/dev/null', executable_path=PATH_CHROME_DRIVER)
 
-    transStatus = 'Y'
-    driver.get(threeDSData["acsURL"])
-    encoded = encode(
-        {"acsTransID":threeDSData["acsTransID"],
-        "messageVersion": threeDSData["messageVersion"],
-        "threeDSServerTransID":threeDSData["threeDSServerTransID"],
-        "messageType":"CReq",
-        "challengeWindowSize":"03"}
-    )
-    driver.execute_script(f"""
-        var form = document.createElement('form');
-        form.method = 'POST';
-        form.name = 'form_3ds';
-        var inp1 = document.createElement('input');
-        inp1.type = 'hidden';
-        inp1.name = 'creq';
-        inp1.value = '{encoded}';
-        form.appendChild(inp1);
-
-        var submit = document.createElement('input');
-        submit.type = 'submit';
-        form.appendChild(submit);
-        document.body.appendChild(form);
-        document.forms['form_3ds'].submit();
-        """)
-    print(f"{reset_color}[{time.strftime('%H:%M:%S', time.localtime())}][{email}][{main_count}] {'Accept 3DS Notification..'} {reset_color}")
-    while True:
-        if 'checkoutshopper-live.adyen.com' in driver.current_url:
-            transStatus = driver.execute_script("return transStatus")
-            driver.close()
-            print(f"{reset_color}[{time.strftime('%H:%M:%S', time.localtime())}][{email}][{main_count}] {'3DS Accepted!'} {reset_color}")
-            break
-
-    headers = {
-        'Host': 'checkoutshopper-live.adyen.com',
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Origin': 'https://checkoutshopper-live.adyen.com',
-        'Accept-Encoding': 'gzip, deflate, br',
-        'Connection': 'keep-alive',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'User-Agent': "Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/92.0.4515.131 Mobile Safari/537.36",
-        'Referer': f'https://checkoutshopper-live.adyen.com/checkoutshopper/threeDS2.shtml?pspReference={pspReference}',
-        'Accept-Language': 'en-gb'
-    }
-    payload = urllib.parse.urlencode({
-        "MD": md,
-        "PaReq": paReq,
-        "TermUrl": f'https://mosaic-platform.jdmesh.co/stores/size/preAuthorise/{order_id}payment/3dsecure?isNewClient=1',
-        "transStatus": transStatus,
-        "spcSupported": False,
-        "webAuthnSupported": False,
-        "successfulWebAuthnSupported": False,
-        "webAuthnNotPerformedReason": None,
-        "self.pspReference": pspReference
-    })
-    r = session.post('https://checkoutshopper-live.adyen.com/checkoutshopper/challengeShopper.shtml', headers=headers, data=payload, proxies=proxies)
-    paRes = re.findall('value="[^"]*"', r.text)[1].replace('value="', '').replace('"', '')
-    
-    headers = {
-        'Host': 'mosaic-platform.jdmesh.co',
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Origin': 'https://checkoutshopper-live.adyen.com',
-        'Accept-Encoding': 'gzip, deflate, br',
-        'Connection': 'keep-alive',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'User-Agent': "Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/92.0.4515.131 Mobile Safari/537.36",
-        'Referer': 'https://checkoutshopper-live.adyen.com/checkoutshopper/challengeShopper.shtml',
-        'Accept-Language': 'en-gb'
-    }
-    payload = urllib.parse.urlencode({
+    params = {
+        'PaReq': paReq,
         'MD': md,
-        'PaRes': paRes
-    })
-    r = session.post(f'https://mosaic-platform.jdmesh.co/stores/size/preAuthorise/{order_id}/payment/3dsecure?isNewClient=1', headers=headers, data=payload)
+        'TermUrl': f'https://mosaic-platform.jdmesh.co/stores/size/preAuthorise/{order_id}/payment/3dsecure'
+    }
+
+    """
+    :param driver: your driver object
+    :param path: url path to post request
+    :param params: request payload
+    """
+    
+    driver.execute_script("""
+    function post(path, params, method='post') {
+        const form = document.createElement('form');
+        form.method = method;
+        form.action = path;
+        for (const key in params) {
+            if (params.hasOwnProperty(key)) {
+            const hiddenField = document.createElement('input');
+            hiddenField.type = 'hidden';
+            hiddenField.name = key;
+            hiddenField.value = params[key];
+            form.appendChild(hiddenField);
+        }
+        }
+        document.body.appendChild(form);
+        form.submit();
+    }
+    post(arguments[1], arguments[0]);
+    """, params, redirect_url)
+    #https://size-mosaic-webapp.jdmesh.co/
+    while True:
+        if 'size-mosaic-webapp.jdmesh.co/' in driver.current_url or "footpatrolgb-mosaic-webapp.jdmesh.co" in driver.current_url:
+            print(f"{reset_color}[{time.strftime('%H:%M:%S', time.localtime())}][{email}][{main_count}] {'Accepted 3DS!'} {reset_color}")
+            driver.execute_script("""
+                document.write("<h1>Successfully authorized 3DS challenge!");
+                var url = new window.URL(window.location.href);
+                window.token = url.searchParams.get("token");
+                window.ba_token = url.searchParams.get("ba_token");""")
+            time.sleep(2)
+            driver.quit()
+            break
+        else:
+            print(f"{reset_color}[{time.strftime('%H:%M:%S', time.localtime())}][{email}][{main_count}] {'Waiting for 3DS Approval..'} {reset_color}")
+            time.sleep(5)
+
     url = f'https://mosaic-platform.jdmesh.co/stores/size/preAuthorise/{order_id}/payment/3dsecure?api_key=0ce5f6f477676d95569067180bc4d46d&channel=android-app-tablet-mosaic'
     payload = {}
-    content_type = 'text/plain;charset=UTF-8'
     try:
-        # sender = genHeaders(url, str(payload), content_type, 'PUT')
         headers = {
             'Host': 'mosaic-platform.jdmesh.co',
             'Accept': '*/*',
@@ -210,24 +153,7 @@ def identify3DS(redirect_url, md, paReq, pspReference, order_id, email, proxies,
             return entered_status
     except:
         print("FAILED")
-
-
-def generate_ayden_data(cardnumber, cardmonth, cardyear, cardcvv, firstname, lastname):
-    ADYEN_KEY = '10001|ABEFDC7DC7BD08EBFABAFADA7433391F4F70FFE6BBB2CE00908FE2983E095FEAC29E5FC04BD26439752949C29323E39283C6F765AE30FE08BB3FAE69BB0C3DF72A16D58C4A102951FEB85A2802D94C8600AED86C9DC41EFE92BB7DF9D3C561479FBB2EC2D4409449C00FE7E63BBEA8813F072AF38198E513C43CDE744A61D02F0CE0F7E25FE79885481F822F79AF3A785E8073F576A64EE739402EAF4D954B2D6F5A1D78911A998298FB43F51CD01066F2249D4A282C4F712256673C041FAC42C67E3BA22F628CCB02082FB45C14D184006DB5F1892D72BBE8B6CC2A97AB1D74E2CB1B5A75C3F61862C0CB2B70D10FF9B634C56A4AC28B24F0CF97EC66C1884F'
-
-    enc = encryptor(ADYEN_KEY, adyen_version='_0_1_18')
-    generation_time = datetime.datetime.now(tz=pytz.timezone('UTC')).strftime('%Y-%m-%dT%H:%M:%S.000Z')
-    data = {
-        "holderName": firstname + ' ' + lastname,
-        "cvc": cardcvv,
-        "number": cardnumber,
-        "expiryYear": cardyear,  # XXXX format
-        "expiryMonth": cardmonth,
-        "generationtime": generation_time
-    }
-    encoded = enc.encrypt_from_dict(dict_=data)
-    
-    return encoded
+        
 
 def size_2captcha(email, main_count):
     print(f"{reset_color}[{time.strftime('%H:%M:%S', time.localtime())}][{email}][{main_count}] {'Solving ReCaptcha..'} {reset_color}")
@@ -350,7 +276,7 @@ def enter_raffle(user_id, product_id, product_size_id, size, email, password, fi
         },
         "deliveryMethod": {
             "isPrefilled": False,
-            "ID": "e2f78b7b-25b5-437b-abbd-099f51a6d75a",
+            "ID": "201b5a4d-207c-4a4f-9f67-3542d0311197",
             "name": "Standard Delivery (Delivered by DPD)",
             "price": {
             "amount": "4.49",
@@ -363,12 +289,11 @@ def enter_raffle(user_id, product_id, product_size_id, size, email, password, fi
         "optionID": product_size_id,
         "productID": product_id,
         "verification": size_2captchaentry(email, main_count),
+        "quantityOfEntries": 1,
         "googleClientID": "1855824786.1672353384"
         }
         print(f"{reset_color}[{time.strftime('%H:%M:%S', time.localtime())}][{email}][{main_count}] {'Submitting Shipping Details'} {reset_color}")
         enter_raffle_response = session.post(enter_url, json=payload, proxies=proxies, headers=headers)
-
-        print(enter_raffle_response.text)
 
         try:
             if enter_raffle_response.json()['errorInfo'] == 'You have already entered this raffle.':
@@ -388,6 +313,7 @@ def enter_raffle(user_id, product_id, product_size_id, size, email, password, fi
 
 
         put_url = f'https://mosaic-platform.jdmesh.co/stores/size/preAuthorise/payment/{order_id}?api_key=0ce5f6f477676d95569067180bc4d46d&channel=android-app-tablet-mosaic&type=CARD'
+
         
         headers = {
         'Host': 'mosaic-platform.jdmesh.co',
@@ -403,10 +329,21 @@ def enter_raffle(user_id, product_id, product_size_id, size, email, password, fi
         'Referer': 'https://size-mosaic-webapp.jdmesh.co/?channel=android-app-tablet-mosaic&appversion=2'
         }
 
+        enc = encryptor(adyen_public_key="10001|ABEFDC7DC7BD08EBFABAFADA7433391F4F70FFE6BBB2CE00908FE2983E095FEAC29E5FC04BD26439752949C29323E39283C6F765AE30FE08BB3FAE69BB0C3DF72A16D58C4A102951FEB85A2802D94C8600AED86C9DC41EFE92BB7DF9D3C561479FBB2EC2D4409449C00FE7E63BBEA8813F072AF38198E513C43CDE744A61D02F0CE0F7E25FE79885481F822F79AF3A785E8073F576A64EE739402EAF4D954B2D6F5A1D78911A998298FB43F51CD01066F2249D4A282C4F712256673C041FAC42C67E3BA22F628CCB02082FB45C14D184006DB5F1892D72BBE8B6CC2A97AB1D74E2CB1B5A75C3F61862C0CB2B70D10FF9B634C56A4AC28B24F0CF97EC66C1884F", adyen_version='_0_1_18')
+        encryptedCard = enc.encrypt_card(card=cardnumber,
+                                         cvv=cardcvv,
+                                         month=cardmonth,
+                                         year=cardyear)
         put_payload = {
-        "user": user_id,
-        "encryptedData": generate_ayden_data(cardnumber, cardmonth, cardyear, cardcvv, firstname, lastname)
-        }
+                "user": user_id,
+                "encryptedData": {
+                        "encryptedCardNumber": encryptedCard['card'],
+                        "encryptedExpiryMonth": encryptedCard['month'],
+                        "encryptedExpiryYear": encryptedCard['year'],
+                        "encryptedSecurityCode": encryptedCard['cvv'],
+                        "holderName": firstname+" "+lastname
+                    }
+                }
 
         print(f"{reset_color}[{time.strftime('%H:%M:%S', time.localtime())}][{email}][{main_count}] {'Submitting Payment Details'} {reset_color}")
         put_response = session.put(put_url, json=put_payload, headers=headers, proxies=proxies)
@@ -436,6 +373,7 @@ def enter_raffle(user_id, product_id, product_size_id, size, email, password, fi
             pspReference = str(redirect_url).split('=')[1]
 
             entered_status = identify3DS(redirect_url, md, paReq, pspReference, order_id, email, proxies, main_count, session, size)
+            
             return entered_status
         except:
             None
