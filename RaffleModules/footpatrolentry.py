@@ -457,13 +457,22 @@ def get_size(sizes_list, size):
     count_sizes = 0
     if 'CHI' not in size:
         for i in range(len(sizes_list)):
-            stripped_size = (str(sizes_list[count_sizes]['name']).split('|')[0])[:-1]
-            if stripped_size == size:
-                product_size_id = sizes_list[count_sizes]['optionID']
-                eligible_size = True
-                break
-            else:
-                eligible_size = False
+            if 'EU' not in size:
+                stripped_size = (str(sizes_list[count_sizes]['name']).split('|')[0])[:-1]
+                if stripped_size == size:
+                    product_size_id = sizes_list[count_sizes]['optionID']
+                    eligible_size = True
+                    break
+                else:
+                    eligible_size = False
+            elif 'EU' in size:
+                stripped_size = (str(sizes_list[count_sizes]['name']).split('|')[1])[1:]
+                if stripped_size == size.replace(' ', "").replace('EU', ""):
+                    product_size_id = sizes_list[count_sizes]['optionID']
+                    eligible_size = True
+                    break
+                else:
+                    eligible_size = False
 
             count_sizes+=1
 

@@ -313,7 +313,6 @@ def enter_raffle(user_id, product_id, product_size_id, size, email, password, fi
 
 
         put_url = f'https://mosaic-platform.jdmesh.co/stores/size/preAuthorise/payment/{order_id}?api_key=0ce5f6f477676d95569067180bc4d46d&channel=android-app-tablet-mosaic&type=CARD'
-
         
         headers = {
         'Host': 'mosaic-platform.jdmesh.co',
@@ -347,6 +346,7 @@ def enter_raffle(user_id, product_id, product_size_id, size, email, password, fi
 
         print(f"{reset_color}[{time.strftime('%H:%M:%S', time.localtime())}][{email}][{main_count}] {'Submitting Payment Details'} {reset_color}")
         put_response = session.put(put_url, json=put_payload, headers=headers, proxies=proxies)
+        print(put_response.text)
 
         try:
             if put_response.json()['status'] == 'failed':
@@ -498,13 +498,22 @@ def get_size(sizes_list, size):
 
     count_sizes = 0
     for i in range(len(sizes_list)):
-        stripped_size = (str(sizes_list[count_sizes]['name']).split('|')[0])[:-1]
-        if stripped_size == size:
-            product_size_id = sizes_list[count_sizes]['optionID']
-            eligible_size = True
-            break
-        else:
-            eligible_size = False
+        if 'EU' not in size:
+            stripped_size = (str(sizes_list[count_sizes]['name']).split('|')[0])[:-1]
+            if stripped_size == size:
+                product_size_id = sizes_list[count_sizes]['optionID']
+                eligible_size = True
+                break
+            else:
+                eligible_size = False
+        elif 'EU' in size:
+            stripped_size = (str(sizes_list[count_sizes]['name']).split('|')[1])[1:]
+            if stripped_size == size.replace(' ', "").replace('EU', ""):
+                product_size_id = sizes_list[count_sizes]['optionID']
+                eligible_size = True
+                break
+            else:
+                eligible_size = False
 
         count_sizes+=1
 

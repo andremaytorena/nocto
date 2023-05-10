@@ -8,7 +8,7 @@
         "Phone_Verification_Mode": "smsactivateru",
         "Country_Code": "16",
         "browser_mode": "headfull",
-        "SMSactivateAPI_KEY": "helo"
+        "SMSactivateAPI_KEY": "YOUR KEY"
     },
     "revolutnormal": {
         "solve_delay": "2"
