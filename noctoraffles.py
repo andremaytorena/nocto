@@ -10,6 +10,7 @@ import RaffleModules.settingsfile as settingsfilepy
 import RaffleModules.shopify as shopify
 import Paths.paths as paths
 import RaffleModules.flatspot as flatspot
+import RaffleModules.routeone as routeone
 import RaffleModules.afew as afew
 import noctotools as noctotools
 from os import path
@@ -120,6 +121,10 @@ def NoctoRaffles(username, license_key):
 
     elif option == "6":
         flatspot.CheckEntryStatus()
+        NoctoRaffles(username, license_key)
+
+    elif option == "7":
+        routeone.CheckEntryStatus()
         NoctoRaffles(username, license_key)
 
     elif option == "9":
