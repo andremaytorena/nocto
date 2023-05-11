@@ -7,6 +7,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 import pandas as pd
+from RaffleModules.jsonerrorlogs import jsonwebhook, jsonthreads, jsonretrylimit, jsonentrydelay
 
 success_entry_count = 0
 failed_entry_count = 0
@@ -37,7 +38,6 @@ def write_success_logs(email):
 def send_discord_log(email, size):
 
     webhooks.flatspot_entry_webhook(raffle_name, email, size, webhook)
-    webhooks.astro_logs("Entered Raffle!", "Route One Launches")
 
 def waiting_solved(stripe_url, email, main_count):
 
@@ -76,20 +76,28 @@ def checkout(size, email, password, firstname, lastname, addressline1, addressli
         for i in range(1):
 
             res = requests.get(raffle_name)
-            s = (res.text.split("json_product = ")[1].split("};")[0] + "}")
+
+            s = (res.text.split("var meta = ")[1].split("};")[0] + "}")
 
             re = json.loads(s)
-            sizes_list = (re['variants'])
+            sizes_list = (re['product']['variants'])
+            size = '4'
 
             sizes_count=0
+            found_size = False
             for i in range(len(sizes_list)):
                 varient_id = sizes_list[sizes_count]['id']
-                title = sizes_list[sizes_count]['title']
+                title = sizes_list[sizes_count]['public_title']
                 if title == size:
+                    found_size=True
                     break
                 else:
                     sizes_count+=1
                     None
+
+            if not found_size:
+                input("Size not found, press enter to exit: ")
+                sys.exit()
 
             print(f"{reset_color}[{time.strftime('%H:%M:%S', time.localtime())}][{email}][{main_count}] {'Adding to cart'} {reset_color}")
 
@@ -153,16 +161,16 @@ def checkout(size, email, password, firstname, lastname, addressline1, addressli
                 "previous_step": "contact_information",
                 "step": "shipping_method",
                 "checkout[email]": email,
+                "checkout[buyer_accepts_marketing]": "0",
                 "checkout[buyer_accepts_marketing]": "1",
                 "checkout[shipping_address][first_name]": firstname,
                 "checkout[shipping_address][last_name]": lastname,
-                "checkout[shipping_address][company]": "",
                 "checkout[shipping_address][address1]": addressline1,
                 "checkout[shipping_address][address2]": addressline2,
                 "checkout[shipping_address][city]": city,
                 "checkout[shipping_address][country]": "GB",
                 "checkout[shipping_address][province]": "",
-                "checkout[shipping_address][zip]": "NW3 7NE",
+                "checkout[shipping_address][zip]": postcode,
                 "checkout[shipping_address][phone]": phonenumber,
                 "checkout[shipping_address][country]": "United Kingdom",
                 "checkout[shipping_address][first_name]": firstname,
@@ -183,7 +191,11 @@ def checkout(size, email, password, firstname, lastname, addressline1, addressli
 
             send_shipping_response = session.post(new_url, data=payload, headers=headers, proxies=proxies)
 
-            if 'Shipping - Releases.RouteOne - Checkout' in send_shipping_response.text:
+            with open('readme.txt', 'w') as f:
+                f.write(str(send_shipping_response.text))
+
+
+            if 'Shipping - Route One Launches - Checkout' in send_shipping_response.text:
                 None
             else:
                 print(f"{red_color}[{time.strftime('%H:%M:%S', time.localtime())}][{email}][{main_count}] {'Failed to Add Shipping Information'} {reset_color}")
@@ -229,7 +241,7 @@ def checkout(size, email, password, firstname, lastname, addressline1, addressli
             get_shipping_method_response = session.post(new_url, data=payload, headers=headers, proxies=proxies)
 
             print(f"{reset_color}[{time.strftime('%H:%M:%S', time.localtime())}][{email}][{main_count}] {'Submitting Shipping Information'} {reset_color}")
-            if 'Payment - Releases.RouteOne - Checkout' in get_shipping_method_response.text:
+            if 'Payment - Route One Launches - Checkout' in get_shipping_method_response.text:
                 None
             else:
                 print(f"{red_color}[{time.strftime('%H:%M:%S', time.localtime())}][{email}][{main_count}] {'Failed to Submit Shipping Information'} {reset_color}")
@@ -333,7 +345,7 @@ def checkout(size, email, password, firstname, lastname, addressline1, addressli
             print(f"{reset_color}[{time.strftime('%H:%M:%S', time.localtime())}][{email}][{main_count}] {'Submitting Card Details'} {reset_color}")
             next_paymentstep_response = session.post(new_url, data=payload, headers=headers, proxies=proxies)
             
-            if 'Processing order - Releases.RouteOne - Checkout' in next_paymentstep_response.text:
+            if 'Processing order - Route One Launches - Checkout' in next_paymentstep_response.text:
                 None
             else:
                 print(f"{red_color}[{time.strftime('%H:%M:%S', time.localtime())}][{email}][{main_count}] {'Failed Submitting Card Details'} {reset_color}")
@@ -472,10 +484,10 @@ def CheckEntryStatus(): # Opens accounts csv and gets account
     jsonfile = open(PATH_SETTINGS)
     settings = json.load(jsonfile)
 
-    webhook = settings['Webhook']
-    delay = int(settings['EntryDelay'])
-    threads = int(settings['Threads'])
-    retrylimit = int(settings['Retry_Limit'])
+    webhook = jsonwebhook()
+    delay = int(jsonentrydelay())
+    threads = int(jsonthreads())
+    retrylimit = int(jsonretrylimit())
     
     #gets current open raffles
     os.system(f'title Flatspot Launches Entry Module - Success: {success_entry_count} - Failed: {failed_entry_count}')

@@ -166,7 +166,7 @@ def checkout(size, email, password, firstname, lastname, addressline1, addressli
                 "checkout[shipping_address][city]": city,
                 "checkout[shipping_address][country]": "GB",
                 "checkout[shipping_address][province]": "",
-                "checkout[shipping_address][zip]": "NW3 7NE",
+                "checkout[shipping_address][zip]": postcode,
                 "checkout[shipping_address][phone]": phonenumber,
                 "checkout[shipping_address][country]": "United Kingdom",
                 "checkout[shipping_address][first_name]": firstname,
