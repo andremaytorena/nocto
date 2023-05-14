@@ -5,7 +5,7 @@
         "CardHolder_ID": ""
     },
     "GmailGenerator": {
-        "Phone_Verification_Mode": "smsactivateru",
+        "Phone_Verification_Mode": "manual",
         "Country_Code": "16",
         "browser_mode": "headfull",
         "SMSactivateAPI_KEY": "YOUR KEY"

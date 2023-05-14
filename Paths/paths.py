@@ -194,11 +194,12 @@ def set_paths_noctotools(operatingSystem):
         os.mkdir(PATH_STRIPE)
 
     #snkrs/emailpassword
-    global PATH_SNKRSEMAIL_PASSWORD_FOLDER, PATH_SNKRS_1, PATH_SNKRS_2, PATH_SNKRS_3
+    global PATH_SNKRSEMAIL_PASSWORD_FOLDER, PATH_SNKRS_1, PATH_SNKRS_2, PATH_SNKRS_3, PATH_SNKRS_TO_TSB
     PATH_SNKRSEMAIL_PASSWORD_FOLDER = path.join(PATH_RANDOMGENERATORS_FOLDER, "SNKRSEmailPasswordConverter")
     PATH_SNKRS_1 = path.join(PATH_RANDOMGENERATORS_FOLDER, "SNKRSEmailPasswordConverter", "EMAILPASSWORD.csv")
     PATH_SNKRS_2 = path.join(PATH_RANDOMGENERATORS_FOLDER, "SNKRSEmailPasswordConverter", "EMAILPROFILESIZEPROXY.csv")
     PATH_SNKRS_3 = path.join(PATH_RANDOMGENERATORS_FOLDER, "SNKRSEmailPasswordConverter", "FULL_PROFILE.csv")
+    PATH_SNKRS_TO_TSB = path.join(PATH_RANDOMGENERATORS_FOLDER, "SNKRSEmailPasswordConverter", "SNKRS_TO_TSB.csv")
     if os.path.exists(PATH_SNKRSEMAIL_PASSWORD_FOLDER):
         False  
     else:
@@ -226,6 +227,14 @@ def set_paths_noctotools(operatingSystem):
         print("File not exist, creating one..")
         headers = ['First Name', 'Middle Name', 'Last Name', 'Address Line 1', 'Address Line 2', 'City', 'Country', 'Zip', 'State', 'Phone Number', 'CC Number', 'Expiry Month', 'Expiry Year', 'CVV', 'Profile Name'] 
         CSV_PATH = PATH_SNKRS_3
+        create_csv(headers, CSV_PATH)
+
+    if os.path.exists(PATH_SNKRS_TO_TSB):
+        False
+    else:
+        print("File not exist, creating one..")
+        headers = ['Usnkrs Profile'] 
+        CSV_PATH = PATH_SNKRS_TO_TSB
         create_csv(headers, CSV_PATH)
 
     #icloud email gen
