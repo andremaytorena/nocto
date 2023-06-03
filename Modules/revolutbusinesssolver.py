@@ -2,6 +2,9 @@ import time, uuid, requests, random, string, json, sys, csv, os, threading
 from Paths.paths import PATH_SETTINGS, PATH_REV_BUSINESS_PROFILES
 from pypresence import Presence
 from Modules.jsonerrorlogs import jsonrevbusinesssolvedelay, jsonwebhook
+import base64, random, uuid
+from typing import List
+from struct import pack
 
 green_color = '\033[92m' #light green
 reset_color = '\033[0m' #reset color
@@ -55,13 +58,57 @@ def revb_logs(logs):
     requests.post('https://discord.com/api/webhooks/1053406138063913061/PS1IggG-JcfZP6jxQb9HqkrXagYdqMBK1JU2CnnhL7IQi7FxTANRWEAiZvbUgvub1AVn', json=normal_logs_webhook)
 
 
-def getDeviceID(deviceid):
-    deviceIdGen = 'https://noctotools-devicegen.herokuapp.com/re/revolut'
-    device = {'device_id': deviceid, 'secret_key': 'RhZ7VE6cRhZ7VE6cRhZ7VE6c'}
-    response = requests.post(deviceIdGen, json=device, verify=True)
-    ret = response.json()
-    DEVICE_ID = ret['result']
-    return DEVICE_ID
+# def getDeviceID(deviceid):
+#     deviceIdGen = 'https://noctotools-devicegen.herokuapp.com/re/revolut'
+#     device = {'device_id': deviceid, 'secret_key': 'RhZ7VE6cRhZ7VE6cRhZ7VE6c'}
+#     response = requests.post(deviceIdGen, json=device, verify=True)
+#     ret = response.json()
+#     DEVICE_ID = ret['result']
+#     return DEVICE_ID
+
+def m54958c(i: int) -> List[int]:
+    return pack('!i', i)
+
+def randBytes(n: int) -> List[int]:
+    randbArr = [random.randint(0, 255) for _ in range(n)]
+    return randbArr
+
+def m71692d(i: int, uuid: uuid.UUID, s: str = None) -> str:
+    mo27057c = random.randint(0, 2147483647)
+    j = i * mo27057c
+    length = 0 if s is None else len(s.encode()) + 4
+    allocate = bytearray(length + 64)
+    array = bytearray(16)
+    array[0:8] = pack('!Q', uuid.int >> 64)
+    array[8:16] = pack('!Q', uuid.int & (2 ** 64 - 1))
+
+    c = m54958c(mo27057c)
+    bArr = bytearray(len(array))
+    for i5 in range(len(array)):
+        if len(array) <= len(c):
+            bArr[i5] = c[i5] ^ (array[i5] & 255)
+        else:
+            bArr[i5] = c[i5 % len(c)] ^ (array[i5] & 255)
+    array = bArr
+    allocate[0:8] = pack('!Q', j)
+    allocate[8:12] = randBytes(4)
+    allocate[12:16] = c
+    allocate[16:20] = randBytes(4)
+    allocate[20:28] = randBytes(8)
+    allocate[28:44] = array
+    allocate[44:52] = randBytes(8)
+    allocate[52:56] = randBytes(4)
+    allocate[56:58] = (s.encode() if s is not None else b'')
+    allocate[58:] = randBytes(12)
+    return base64.urlsafe_b64encode(allocate).decode()
+ 
+def getDeviceID(uuid_):
+    while True:
+        bArr = m71692d(3, uuid_, None)
+        if "-" in str(bArr) or "_" in str(bArr) or "==" not in str(bArr):
+            continue
+        else:
+            return str(bArr)
 
 def getPushID():
     PUSHID = ''.join(random.choice("abcdef" + string.digits) for _ in range(64))

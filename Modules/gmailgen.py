@@ -511,7 +511,7 @@ def createaccount(firstname, lastname, username, password, recovery, day, monthd
 
         print(f'{Fore.RESET}|'+ str(account_number) + '| '  + (username) + '@gmail.com | ' + 'Finishing Account Details')
 
-        #finalizing details check
+        #finalizing details check THIS WORKS
         for i in range(retry_limit):
             try:
                 driver.find_element(By.XPATH, '//*[@id="view_container"]/div/div/div[2]/div/div[2]/div/div[1]/div/div/button/span').click()
@@ -520,25 +520,41 @@ def createaccount(firstname, lastname, username, password, recovery, day, monthd
                 print(f'{Fore.RED}|'+ str(account_number) + '| '  + (username) + '@gmail.com | ' + 'Failed Submitting Details, Retrying...')
                 time.sleep(2)
 
-        #finalizing details check 1
+        time.sleep(2)
+        #get more from your number pop up
+        for i in range(retry_limit):
+            try:
+                driver.find_element(By.XPATH, '//*[@id="view_container"]/div/div/div[2]/div/div[2]/div[2]/div[2]/div/div/button').click()
+                break
+            except:
+                time.sleep(2)
+
+        #finalizing details check 1 
         time.sleep(2)
         for i in range(retry_limit):
             try:
                 driver.find_element(By.XPATH, '//*[@id="view_container"]/div/div/div[2]/div/div[2]/div[2]/div[2]/div/div/button/span').click()
                 break
             except:
-                print(f'{Fore.RED}|'+ str(account_number) + '| '  + (username) + '@gmail.com | ' + 'Failed Submitting Details (Check1), Retrying...')
                 time.sleep(2)
 
-        #finalizing details check 2
         time.sleep(2)
         for i in range(retry_limit):
             try:
-                driver.find_element(By.XPATH, '//*[@id="selectionc10"]').click()
+                driver.find_element(By.XPATH, '//*[@id="view_container"]/div/div/div[2]/div/div[1]/div/form/span/section/div/div/div/div/div[1]/div/span/div[1]/div/div[1]/div').click()
                 break
             except:
-                print(f'{Fore.RED}|'+ str(account_number) + '| '  + (username) + '@gmail.com | ' + 'Failed Submitting Details (Check2), Retrying...')
-                time.sleep(2)
+                time.sleep(2)        
+
+        #finalizing details check 2
+        # time.sleep(2)
+        # for i in range(retry_limit):
+        #     try:
+        #         driver.find_element(By.XPATH, '//*[@id="selectionc10"]').click()
+        #         break
+        #     except:
+        #         print(f'{Fore.RED}|'+ str(account_number) + '| '  + (username) + '@gmail.com | ' + 'Failed Submitting Details (Check2), Retrying...')
+        #         time.sleep(2)
 
         #finalizing details check 3
         time.sleep(2)
