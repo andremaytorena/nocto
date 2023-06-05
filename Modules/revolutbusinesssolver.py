@@ -1,5 +1,5 @@
 import time, uuid, requests, random, string, json, sys, csv, os, threading
-from Paths.paths import PATH_SETTINGS, PATH_REV_BUSINESS_PROFILES
+from Paths.paths import PATH_REV_BUSINESS_PROFILES
 from pypresence import Presence
 from Modules.jsonerrorlogs import jsonrevbusinesssolvedelay, jsonwebhook
 import base64, random, uuid
@@ -109,6 +109,8 @@ def getDeviceID(uuid_):
             continue
         else:
             return str(bArr)
+        
+        
 
 def getPushID():
     PUSHID = ''.join(random.choice("abcdef" + string.digits) for _ in range(64))
@@ -118,7 +120,7 @@ def login(EMAIL,PASSWORD):
 
     print(f"{reset_color}[{time.strftime('%H:%M:%S', time.localtime())}] [{EMAIL}] {'Logging in..'} {reset_color}")
 
-    deviceid = str(uuid.uuid4())
+    deviceid = uuid.uuid4()
     DEVICE_ID = getDeviceID(deviceid)
 
     session = requests.session()
@@ -309,6 +311,6 @@ def get_session():
 
 
 
-
+get_session()
         
             
