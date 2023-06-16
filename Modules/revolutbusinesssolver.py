@@ -232,7 +232,7 @@ def login(EMAIL,PASSWORD):
             'x-timezone': 'Europe/London',
             'accept-language': 'en-GB;q=1.0, en-GB;q=0.9',
             'user-agent': 'Revolut/com.revolut.business 3419 (iPhone; iOS 14.4.2; sp:AAS)',
-            'x-device-id': deviceid,
+            'x-device-id': str(deviceid),
             'x-device-model': 'iPhone9,3',
             }
         )
@@ -257,7 +257,7 @@ def login(EMAIL,PASSWORD):
                     'x-timezone': 'Europe/London',
                     'accept-language': 'en-GB;q=1.0, en-GB;q=0.9',
                     'user-agent': 'Revolut/com.revolut.business 3419 (iPhone; iOS 14.4.2; sp:AAS)',
-                    'x-device-id': deviceid,
+                    'x-device-id': str(deviceid),
                     'x-device-model': 'iPhone9,3',
                     },
                 json = {
@@ -310,7 +310,5 @@ def get_session():
     loginThread.join()
 
 
-
-get_session()
         
             
