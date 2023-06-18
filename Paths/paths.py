@@ -509,7 +509,7 @@ def set_paths_noctotools(operatingSystem):
         PATH_CHROME_DRIVER = path.join(MAIN_PATH, "chromedriver.exe")
         PATH_CHROME_ZIP = path.join(MAIN_PATH, 'chromedriver.zip')
 
-        version = requests.get("https://noctotools.herokuapp.com/chrome_version").text
+        version = requests.get("https://nocto-production.up.railway.app/chrome_version").text
         if os.path.exists(PATH_CHROME_DRIVER):
             None
         else:
@@ -534,7 +534,7 @@ def set_paths_noctotools(operatingSystem):
         PATH_CHROME_DRIVER = path.join(MAIN_PATH, "chromedriver")
         PATH_CHROME_ZIP = path.join(MAIN_PATH, 'chromedriver.zip')
 
-        version = requests.get("https://noctotools.herokuapp.com/chrome_version").text
+        version = requests.get("https://nocto-production.up.railway.app/chrome_version").text
         if os.path.exists(PATH_CHROME_DRIVER):
             None
         else:

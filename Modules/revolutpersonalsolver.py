@@ -104,8 +104,8 @@ def getRevolutVersion_UserAgent():
     
     for i in range(3):
         try:
-            revolutVersion = requests.get("https://noctotools.herokuapp.com/revolut_personal_version").text 
-            revolutUserAgent = requests.get("https://noctotools.herokuapp.com/revolut_personal_useragent").text 
+            revolutVersion = requests.get("https://nocto-production.up.railway.app/revolut_personal_version").text 
+            revolutUserAgent = requests.get("https://nocto-production.up.railway.app/revolut_personal_useragent").text 
             return revolutVersion, revolutUserAgent
         except:
             None

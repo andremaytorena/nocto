@@ -85,7 +85,7 @@ def main(username, license_key):
 
 def checkVersion():
     print("Checking for updates...")
-    r = requests.get("https://noctotools.herokuapp.com/version")
+    r = requests.get("https://nocto-production.up.railway.app/version")
     newestVersion = r.text
     if newestVersion == currentVersion:
         print("No updates found")
@@ -94,7 +94,7 @@ def checkVersion():
 
 def downloadUpdate(newestVersion):
     print("Update found, downloading...")
-    url = "https://noctotools.herokuapp.com/download"
+    url = "https://nocto-production.up.railway.app/download"
 
     output_file = f"NoctoTools V{newestVersion}.exe"
     with urllib.request.urlopen(url) as response, open(output_file, 'wb') as out_file:
@@ -135,7 +135,7 @@ def start():
 
     def verify_license(license_key):
         headers = {"api_key": license_key}
-        res = requests.get("https://noctotools.herokuapp.com/authorize_license", headers=headers)
+        res = requests.get("https://nocto-production.up.railway.app/authorize_license", headers=headers)
         try: 
             if res.json()['authorized'] == 'Validated':
                 print('License is good to go!')      
