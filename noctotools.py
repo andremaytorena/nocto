@@ -21,9 +21,8 @@ import Modules.meshordertracker as meshordertracker
 import Modules.footshopstockscraper as footshop
 import Modules.revolutbusinesssolver as revbusinesssolver
 import Modules.revolutpersonalsolver as revpersonalsolver
-import Modules.meshstockscraper as meshstockscraper
 import Modules.endstockscraper as endstockscraper
-import Modules.testsolver as solver
+import Archived.testsolver as solver
 import noctoraffles as noctoraffles
 import Modules.platform_comparator as platform_comparator
 import Modules.nikeaccgen as nikeaccgen

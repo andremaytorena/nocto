@@ -1,5 +1,4 @@
 from colorama import Fore
-import os, requests, json, sys, urllib, shutil, time
 import RaffleModules.footpatrolentry as footpatrolentry
 import RaffleModules.footpatrolaccgen as footpatrolaccgen
 import RaffleModules.sizeentry as sizeentry
@@ -7,7 +6,7 @@ import RaffleModules.sizeaccgen as sizeaccgen
 import RaffleModules.sizewinchecker as sizewinchecker
 import RaffleModules.footpatrolwinchecker as footpatrolwinchecker
 import RaffleModules.settingsfile as settingsfilepy
-import RaffleModules.shopify as shopify
+import Archived.shopify as shopify
 import Paths.paths as paths
 import RaffleModules.flatspot as flatspot
 import RaffleModules.routeone as routeone
